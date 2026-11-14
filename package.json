@@ -1,0 +1,35 @@
+{
+  "name": "mws-theme",
+  "version": "1.0.0",
+  "description": "MWS — GNT Landscaping WordPress theme. Tailwind + Swiper + AOS, all compiled locally via gulp.",
+  "private": true,
+  "scripts": {
+    "build": "gulp build",
+    "dev": "gulp",
+    "watch": "gulp"
+  },
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "cssnano": "^7.0.6",
+    "gulp": "^5.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-postcss": "^10.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-terser": "^2.1.0",
+    "postcss": "^8.4.49",
+    "postcss-import": "^16.1.0",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "@fontsource/anton": "^5.3.0",
+    "@fontsource/corben": "^5.3.0",
+    "@tailwindcss/forms": "^0.5.9",
+    "aos": "^2.3.4",
+    "swiper": "^11.1.15"
+  }
+}

@@ -1,0 +1,49 @@
+/* ─────────────────────────────────────────────────────────────────────
+   Icon masks — GENERATED FILE, do not edit by hand.
+
+   Regenerate after changing the icon set. Each icon is a real .svg file
+   in assets/icons/; none of the markup is inlined into the page. The
+   mask lets a flat .svg still take its colour from `currentColor`, which
+   an <img> could not do.
+   ───────────────────────────────────────────────────────────────────── */
+
+.mws-icon {
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask-image: var(--mws-icon);
+          mask-image: var(--mws-icon);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+}
+
+/* Zero-specificity default size, so any Tailwind h-/w- utility on the
+   element still wins. */
+:where(.mws-icon) { width: 1.5rem; height: 1.5rem; flex: none; }
+
+.mws-icon--arrow { --mws-icon: url("../icons/arrow.svg"); }
+.mws-icon--arrow-ne { --mws-icon: url("../icons/arrow-ne.svg"); }
+.mws-icon--calendar { --mws-icon: url("../icons/calendar.svg"); }
+.mws-icon--check { --mws-icon: url("../icons/check.svg"); }
+.mws-icon--chevron { --mws-icon: url("../icons/chevron.svg"); }
+.mws-icon--clock { --mws-icon: url("../icons/clock.svg"); }
+.mws-icon--close { --mws-icon: url("../icons/close.svg"); }
+.mws-icon--facebook { --mws-icon: url("../icons/facebook.svg"); }
+.mws-icon--heart { --mws-icon: url("../icons/heart.svg"); }
+.mws-icon--instagram { --mws-icon: url("../icons/instagram.svg"); }
+.mws-icon--leaf { --mws-icon: url("../icons/leaf.svg"); }
+.mws-icon--mail { --mws-icon: url("../icons/mail.svg"); }
+.mws-icon--menu { --mws-icon: url("../icons/menu.svg"); }
+.mws-icon--phone { --mws-icon: url("../icons/phone.svg"); }
+.mws-icon--pin { --mws-icon: url("../icons/pin.svg"); }
+.mws-icon--pinterest { --mws-icon: url("../icons/pinterest.svg"); }
+.mws-icon--quote { --mws-icon: url("../icons/quote.svg"); }
+.mws-icon--ruler { --mws-icon: url("../icons/ruler.svg"); }
+.mws-icon--shield { --mws-icon: url("../icons/shield.svg"); }
+.mws-icon--star { --mws-icon: url("../icons/star.svg"); }
+.mws-icon--sun { --mws-icon: url("../icons/sun.svg"); }
+.mws-icon--truck { --mws-icon: url("../icons/truck.svg"); }
+.mws-icon--youtube { --mws-icon: url("../icons/youtube.svg"); }

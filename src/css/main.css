@@ -1,0 +1,681 @@
+/* =====================================================================
+   MWS theme — application stylesheet.
+
+   Build: src/css/main.css → postcss(tailwind, autoprefixer) → cssnano
+          → dist/css/main.min.css
+
+   Vendor CSS (Swiper, AOS) is a separate bundle, dist/css/vendor.min.css,
+   enqueued ahead of this file — see gulpfile.js and functions.php.
+
+   Fonts are self-hosted from @fontsource; gulp copies the woff2 files to
+   dist/fonts, which is what the font-face rules below point at.
+   ===================================================================== */
+
+/* Icon masks. Generated — see the note at the top of the file itself. Kept as
+   the first statement because @import must precede every other rule. */
+@import "icons.css";
+
+/* ── Self-hosted fonts ────────────────────────────────────────────────
+   Headings are Anton, body copy is Corben. Latin-subset woff2, with
+   `swap` so text stays visible while they load.
+   ------------------------------------------------------------------- */
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/anton-latin-400-normal.woff2") format("woff2");
+}
+
+/* Corben ships 400 and 700 only. CSS font matching resolves 500 down to 400 and
+   600 up to 700, so the font-semibold / font-extrabold utilities the design
+   already uses still land on a real file rather than a synthesised weight. */
+@font-face {
+  font-family: "Corben";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/corben-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Corben";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/corben-latin-700-normal.woff2") format("woff2");
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Headings ─────────────────────────────────────────────────────────
+   Every heading uses Anton (the `display` family in tailwind.config.js).
+   Applied here rather than per-element so a new heading picks it up
+   automatically.
+
+   Two deliberate choices carried over from the original: the face ships a
+   single 400 weight, so font-bold utilities on headings were removed — asking
+   for 700 only gets a synthesised faux-bold that smears a face this heavy. And
+   tracking is left near normal rather than the tracking-tight the sans
+   headings used, which would crowd the caps.
+   ------------------------------------------------------------------- */
+h1, h2, h3, h4 {
+  font-family: "Anton", Impact, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  /* Anton is a condensed display face — set in caps it reads with far more
+     impact, which is the whole reason it is here. */
+  text-transform: uppercase;
+}
+
+/* ── Header marquee ───────────────────────────────────────────────────
+   Two identical tracks sit side by side and both slide left by exactly their
+   own width, so the moment the first is fully off-screen the second is sitting
+   precisely where it began and the reset is invisible. The gap is duplicated as
+   padding-right so the seam spaces the same as everything else.
+   ------------------------------------------------------------------- */
+.marquee__track {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 3rem;
+  padding-right: 3rem;
+  animation: marquee-scroll 32s linear infinite;
+  will-change: transform;
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+/* Hovering holds it still so a claim can actually be read. */
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track { animation-play-state: paused; }
+
+/* ── Scroll reveals (AOS) ─────────────────────────────────────────────
+   aos.css sets [data-aos^=fade] to opacity:0 the moment it loads, so if
+   aos.js never runs — or reduced motion, where we skip it on purpose — that
+   content would be invisible for good. main.js marks <html> only when AOS is
+   genuinely initialising, so anything else lands here and stays visible.
+   ------------------------------------------------------------------- */
+html:not(.aos-ready) [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* ── The [hidden] attribute vs Tailwind utilities ─────────────────────
+   `.flex` and `[hidden]` have identical specificity, and Tailwind emits its
+   utilities after preflight — so an element that is both (like the banner
+   control bar before its slideshow initialises) would still be displayed.
+   ------------------------------------------------------------------- */
+[hidden] { display: none !important; }
+
+/* ── Photo panes ──────────────────────────────────────────────────────
+   Every image area in the page uses .media, with the photo set as an inline
+   background-image by inc/helpers.php → mws_media(). A pane with no image set
+   gets .is-empty: a plain neutral surface that holds the layout until a URL
+   is added in inc/config.php.
+   ------------------------------------------------------------------- */
+.media {
+  background-color: #F1EAE8;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.media.is-empty {
+  background-color: #F1EAE8;
+  background-image: none;
+}
+
+/* ── Banner slideshow (Swiper) ────────────────────────────────────────
+   Swiper handles the crossfade; this only adds the slow drift on the active
+   slide. The transform sits on the inner .media so it never fights the
+   transforms Swiper applies to .swiper-slide itself.
+   ------------------------------------------------------------------- */
+[data-hero-swiper] .media {
+  transform: scale(1.06);
+  transition: transform 9s ease-out;
+  will-change: transform;
+}
+
+[data-hero-swiper] .swiper-slide-active .media { transform: scale(1); }
+
+/* Before any URLs are set, let the banner's dark backdrop show through so the
+   white headline stays readable. */
+[data-hero-swiper] .media.is-empty { background-color: transparent; }
+
+/* If Swiper's stylesheet fails to load, keep the banner to a single slide
+   instead of stacking all four and quadrupling the section height. */
+.swiper { overflow: hidden; }
+.swiper-wrapper { display: flex; }
+.swiper-slide { flex: none; width: 100%; }
+
+/* ── Swiper pagination dots ───────────────────────────────────────────
+   Swiper positions pagination for the common case of it sitting inside the
+   slider; ours sit inline instead, so left/bottom/width are reset here.
+
+   Note the selector: an *external* pagination element never receives Swiper's
+   base .swiper-pagination class, only .swiper-pagination-bullets and
+   -horizontal. Pairing .swiper-dots with -bullets both matches and outranks
+   Swiper's own single-class rule, which otherwise forces width:100% and
+   collapses the arrow buttons beside it.
+   ------------------------------------------------------------------- */
+.swiper-dots.swiper-pagination-bullets {
+  --swiper-pagination-bullet-width: .625rem;
+  --swiper-pagination-bullet-height: .625rem;
+  --swiper-pagination-bullet-horizontal-gap: 0px;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+  /* Stadium, not Swiper's default 50% — which turns the widened active dot
+     into an ellipse instead of a pill. */
+  --swiper-pagination-bullet-border-radius: 9999px;
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: auto;
+  inset: auto;
+  z-index: auto;
+}
+
+/* Active dot stretches into a pill, as the hand-rolled dots used to. */
+.swiper-dots .swiper-pagination-bullet {
+  transition: width .3s ease, background-color .3s ease;
+}
+
+.swiper-dots .swiper-pagination-bullet-active { width: 1.75rem; }
+
+/* On the banner photo. */
+.swiper-dots--light {
+  --swiper-pagination-color: #FFFFFF;
+  --swiper-pagination-bullet-inactive-color: rgba(255, 255, 255, .4);
+}
+
+/* On a light section background. */
+.swiper-dots--ink {
+  --swiper-pagination-color: #C8102E;
+  --swiper-pagination-bullet-inactive-color: rgba(23, 16, 15, .22);
+}
+
+/* On the dark services panel. */
+.swiper-dots--brand {
+  --swiper-pagination-color: #E23B4E;
+  --swiper-pagination-bullet-inactive-color: rgba(255, 255, 255, .25);
+}
+
+/* ── Anchor offset for the sticky header ──────────────────────────────
+   Utility strip (2.5rem) + main bar (88px) = 128px, plus a little breathing
+   room so anchored headings do not sit flush against it. */
+html { scroll-behavior: smooth; scroll-padding-top: 140px; }
+
+/* WordPress's admin bar is 32px (46px on mobile) of fixed chrome above the
+   page, so logged-in editors need the anchor offset pushed down to match. */
+body.admin-bar { scroll-padding-top: 172px; }
+
+@media screen and (max-width: 782px) {
+  body.admin-bar { scroll-padding-top: 186px; }
+}
+
+
+/* ── Journal table of contents ─────────────────────────────────────────
+   A rail of headings beside the article. The rule down the left is on the
+   list, and each link carries a transparent one of its own laid over it, so
+   the active marker replaces a segment of the rail instead of sitting next
+   to it and reading as two lines. */
+.mws-toc__list {
+  border-left: 2px solid #ECE3E1;
+}
+
+.mws-toc__link {
+  display: flex;
+  gap: .625rem;
+  align-items: baseline;
+  margin-left: -2px;
+  padding: .5rem 0 .5rem .875rem;
+  border-left: 2px solid transparent;
+  color: #6F625F;
+  line-height: 1.35;
+  transition: color .25s ease, border-color .25s ease;
+}
+
+.mws-toc__link:hover { color: #C8102E; }
+
+.mws-toc__num {
+  flex: none;
+  font-size: .75rem;
+  font-weight: 700;
+  color: #C8102E;
+  opacity: .5;
+}
+
+/* Set by main.js as each section passes under the header. */
+.mws-toc__link.is-active {
+  border-left-color: #C8102E;
+  color: #C8102E;
+}
+
+.mws-toc__link.is-active .mws-toc__num { opacity: 1; }
+
+
+/* =====================================================================
+   PREMIUM LAYER
+   ---------------------------------------------------------------------
+   Everything below is the "more premium feel" pass. It is deliberately
+   additive and grouped in one place: deleting this block returns the site
+   to the original design exactly.
+
+   The approach is restraint rather than decoration — the brand, layout and
+   copy are untouched. What changes is the things that read as production
+   value up close: type finish, depth, edge quality, and the timing of
+   motion.
+   ===================================================================== */
+
+/* ── 1. Type finish ───────────────────────────────────────────────────
+   Anton is a heavy display face; at hero sizes the default tracking
+   reads slightly loose and the browser's greedy line-breaker tends to leave
+   a lonely last word. `text-wrap: balance` evens the ragged edge across
+   lines, which is the single biggest "designed, not defaulted" cue on a
+   headline. Optical sizing and kerning do the rest.
+   ------------------------------------------------------------------- */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+  font-kerning: normal;
+  font-optical-sizing: auto;
+}
+
+/* No letter-spacing anywhere on the site, by request. Kerning above still
+   corrects individual awkward pairs; that is the font's own metrics rather
+   than tracking applied across the line. */
+* { letter-spacing: normal; }
+
+/* Long-form paragraphs get the softer sibling: `pretty` only prevents
+   orphans rather than rebalancing every line, which is what body copy
+   wants. */
+p { text-wrap: pretty; }
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── 2. Edge quality ──────────────────────────────────────────────────
+   Every photo pane in the design is a large flat rectangle of colour meeting
+   the page background. A 1px inset hairline stops that meeting from looking
+   like a print misregistration, and costs nothing in layout.
+   ------------------------------------------------------------------- */
+/* `:where()` keeps this at zero specificity. A plain `.media { position: relative }`
+   sits after Tailwind's utilities in the cascade and silently beat `.absolute`
+   on any pane positioned with it — the inner-page banner images collapsed to
+   zero height because of exactly that. */
+:where(.media) {
+  position: relative;
+  isolation: isolate;
+}
+
+.media {
+  /* A very slightly warm base under photos, so a slow-loading image fades in
+     from the palette rather than from grey. */
+  background-color: #EFE6E3;
+}
+
+.media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(23, 16, 15, .07);
+}
+
+/* On the banner the hairline would cut across the full-bleed photo, and the
+   slide panes sit edge to edge — so it is suppressed there. */
+[data-hero-swiper] .media::after { display: none; }
+
+/* ── 3. Depth ─────────────────────────────────────────────────────────
+   The original shadows are single large blurs. Real objects cast two: a tight
+   contact shadow that anchors the edge, and a wide ambient one. Upgrading the
+   two shared shadow tokens in place lifts every card, quote and floating panel
+   at once, without touching the markup.
+   ------------------------------------------------------------------- */
+.shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(35, 10, 14, .05),
+    0 8px 20px -10px rgba(35, 10, 14, .16),
+    0 30px 60px -35px rgba(35, 10, 14, .30) !important;
+}
+
+.shadow-lift {
+  box-shadow:
+    0 2px 4px rgba(35, 10, 14, .06),
+    0 16px 32px -12px rgba(35, 10, 14, .22),
+    0 48px 90px -40px rgba(35, 10, 14, .42) !important;
+}
+
+/* ── 4. Motion timing ─────────────────────────────────────────────────
+   Tailwind's default `transition` easing is `cubic-bezier(.4,0,.2,1)`, which
+   is fine but ubiquitous. A longer tail decelerates more gently and is most
+   of the difference between "a website" and "an expensive website". Applied
+   to the shared transition utility so every hover inherits it.
+   ------------------------------------------------------------------- */
+.transition,
+.transition-all,
+.transition-colors,
+.transition-transform,
+.transition-opacity {
+  transition-timing-function: cubic-bezier(.22, .61, .36, 1);
+}
+
+/* ── 5. Buttons ───────────────────────────────────────────────────────
+   The primary button keeps its shape and colour; what it gains is a soft
+   specular sheen that sweeps once on hover, and a shadow that grows with the
+   lift rather than staying fixed while the button moves.
+   ------------------------------------------------------------------- */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-premium::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .28), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+}
+
+.btn-premium:hover::before {
+  animation: sheen-sweep .9s cubic-bezier(.22, .61, .36, 1);
+}
+
+@keyframes sheen-sweep {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(320%)  skewX(-18deg); }
+}
+
+/* Deepen the glow as the button lifts, so the two read as one movement. */
+.shadow-glow { transition: box-shadow .3s cubic-bezier(.22, .61, .36, 1); }
+
+.shadow-glow:hover {
+  box-shadow:
+    0 6px 14px -8px rgba(200, 16, 46, .75),
+    0 18px 34px -14px rgba(200, 16, 46, .55) !important;
+}
+
+/* ── 6. Focus ─────────────────────────────────────────────────────────
+   A two-tone ring — brand colour with a white spacer — stays visible on both
+   the light sections and the dark panels, where a single dark outline
+   disappears.
+   ------------------------------------------------------------------- */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid #C8102E;
+  outline-offset: 2px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, .85);
+}
+
+/* On the dark panels the spacer inverts so the ring reads against near-black. */
+.bg-dark :where(a, button):focus-visible,
+footer :where(a, button):focus-visible,
+[data-hero] :where(a, button):focus-visible {
+  outline-color: #F7C3C9;
+  box-shadow: 0 0 0 4px rgba(23, 16, 15, .75);
+}
+
+/* ── 7. Sticky header ─────────────────────────────────────────────────
+   At rest the header is plain white and sits flush with the hero. Once the
+   page scrolls, main.js adds .is-stuck: the bar frosts, tightens slightly and
+   grows a hairline, so it separates from the content passing underneath
+   instead of floating on top of it unexplained.
+   ------------------------------------------------------------------- */
+[data-header] {
+  transition:
+    background-color .4s cubic-bezier(.22, .61, .36, 1),
+    box-shadow .4s cubic-bezier(.22, .61, .36, 1),
+    backdrop-filter .4s cubic-bezier(.22, .61, .36, 1);
+}
+
+[data-header].is-stuck {
+  background-color: rgba(255, 255, 255, .82);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  box-shadow:
+    0 1px 0 0 rgba(23, 16, 15, .07),
+    0 12px 30px -18px rgba(35, 10, 14, .28);
+}
+
+/* The bar itself compresses a little as you scroll, which reads as the page
+   settling rather than the header simply changing colour. */
+[data-header] [data-header-bar] {
+  transition: height .4s cubic-bezier(.22, .61, .36, 1);
+}
+
+@media (min-width: 768px) {
+  [data-header].is-stuck [data-header-bar] { height: 74px; }
+}
+
+/* ── 8. Dark panels ───────────────────────────────────────────────────
+   The services panel, CTA band and footer are large fields of near-black.
+   A faint grain breaks up the flatness and stops the wide gradients from
+   banding on 8-bit displays — the same trick print uses to keep a solid
+   ink field from looking dead.
+   ------------------------------------------------------------------- */
+.bg-dark::before,
+footer.bg-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .55;
+  mix-blend-mode: overlay;
+  /* A real file rather than an inlined data: URI — no SVG markup anywhere in
+     the CSS or the page source. */
+  background-image: url("../icons/grain.svg");
+}
+
+/* A hairline of warm light along the top edge of each dark panel, so it reads
+   as a lit surface rather than a hole in the page. */
+.bg-dark {
+  position: relative;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, .07);
+}
+
+/* ── 9. Gilt accents ──────────────────────────────────────────────────
+   One warm metallic, used in exactly two places: the eyebrow dot on dark
+   panels and the award frames. Any more and it stops reading as an accent.
+   ------------------------------------------------------------------- */
+.text-brand-200 > .rounded-full,
+.text-brand-200 span.rounded-full {
+  background: linear-gradient(135deg, #E4C868, #C9A227);
+  box-shadow: 0 0 10px rgba(201, 162, 39, .55);
+}
+
+/* ── 10. Review widget ────────────────────────────────────────────────
+   Trustindex renders its own markup from a third-party script, so its cards
+   arrive at a fixed size that reads small against this page's type scale.
+   Scaling the wrapper is the one lever that works without depending on their
+   internal class names, which are not ours to rely on.
+
+   `zoom` rather than `transform: scale()` deliberately: zoom reflows, so the
+   section grows to fit the enlarged widget. A transform would scale it
+   visually while leaving the original height reserved, overlapping whatever
+   comes next.
+   ------------------------------------------------------------------- */
+.mws-reviews {
+  zoom: 1.15;
+}
+
+/* Below md the widget is already close to full width, so scaling it further
+   would push it past the viewport. */
+@media (max-width: 767px) {
+  .mws-reviews { zoom: 1; }
+}
+
+/* ── 11. Pulse ────────────────────────────────────────────────────────
+   For the financing button.
+
+   This was a scaled ::after ring, which never worked: `.btn-premium` sets
+   `overflow: hidden` so the sheen sweep stays inside the button, and that same
+   rule caged the ring — it expanded *within* the button instead of around it.
+
+   An element's own box-shadow is not clipped by its own overflow, only its
+   descendants are. So the ring is a box-shadow spread on the button itself and
+   escapes the clip without touching `.btn-premium`, which the sheen still needs.
+
+   Colour comes from a custom property so the effect is reusable; it defaults to
+   the finance green rather than `currentColor`, which on this button is white
+   and would be invisible against the header.
+   ------------------------------------------------------------------- */
+.mws-pulse {
+  --mws-pulse-rgb: 18 133 74;
+  animation: mws-pulse-ring 2.4s cubic-bezier(.22, .61, .36, 1) infinite;
+}
+
+@keyframes mws-pulse-ring {
+  0%   { box-shadow: 0 0 0 0    rgb(var(--mws-pulse-rgb) / .55); }
+  70%  { box-shadow: 0 0 0 16px rgb(var(--mws-pulse-rgb) / 0); }
+  100% { box-shadow: 0 0 0 0    rgb(var(--mws-pulse-rgb) / 0); }
+}
+
+/* Cancelled rather than paused on hover: pausing a box-shadow animation freezes
+   the ring mid-expansion and leaves it sitting there. Once the visitor has found
+   the button, a ring pulsing under their cursor is just noise. */
+.mws-pulse:hover,
+.mws-pulse:focus-visible { animation: none; }
+
+/* ── 12. Contact Form 7 ───────────────────────────────────────────────
+   CF7 emits its own markup, so the theme's field styling is applied to its
+   output rather than by rewriting it. Kept to the few selectors CF7 actually
+   guarantees — .wpcf7-form-control and friends — so a plugin update does not
+   silently unstyle every form.
+   ------------------------------------------------------------------- */
+.mws-cf7 .wpcf7-form label {
+  display: block;
+  margin-bottom: .375rem;
+  font-size: .84375rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #17100F;
+}
+
+.mws-cf7 .wpcf7-form p { margin-bottom: 1.15rem; }
+
+/* Two-up row for name/phone. CF7 wraps each field in its own <p>, so the grid
+   goes on a wrapper the form markup provides. */
+.mws-cf7 .mws-cf7-grid { display: grid; gap: 0 1.15rem; }
+
+@media (min-width: 640px) {
+  .mws-cf7 .mws-cf7-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.mws-cf7 .wpcf7-form-control:not(.wpcf7-submit):not([type="file"]) {
+  width: 100%;
+  border: 1px solid #ECE3E1;
+  border-radius: 1rem 0 1rem 0;
+  background-color: #FBF6F4;
+  padding: .7rem .95rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #17100F;
+  transition: border-color .3s cubic-bezier(.22, .61, .36, 1), box-shadow .3s cubic-bezier(.22, .61, .36, 1);
+}
+
+.mws-cf7 .wpcf7-form-control:not(.wpcf7-submit):focus {
+  border-color: #C8102E;
+  box-shadow: 0 0 0 3px rgba(200, 16, 46, .12);
+  outline: none;
+}
+
+.mws-cf7 textarea.wpcf7-form-control { min-height: 8rem; resize: vertical; }
+
+/* Submit: the same shape and weight as every other primary button. */
+.mws-cf7 .wpcf7-submit {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 1rem 0 1rem 0;
+  background-color: #C8102E;
+  padding: .95rem 1.5rem;
+  font-family: inherit;
+  font-size: .84375rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 22px -12px rgba(200, 16, 46, .9);
+  transition: background-color .3s cubic-bezier(.22, .61, .36, 1), transform .3s cubic-bezier(.22, .61, .36, 1);
+}
+
+.mws-cf7 .wpcf7-submit:hover { background-color: #A00C24; transform: translateY(-2px); }
+
+/* CF7's own validation and response messages, brought into the palette. */
+.mws-cf7 .wpcf7-not-valid-tip {
+  margin-top: .3rem;
+  font-size: .84375rem;
+  font-weight: 700;
+  color: #C8102E;
+}
+
+.mws-cf7 .wpcf7-response-output {
+  margin: 1.25rem 0 0;
+  border-radius: 1rem 0 1rem 0;
+  border-width: 1px;
+  padding: .85rem 1.1rem;
+  font-size: .9375rem;
+}
+
+.mws-cf7 form.invalid .wpcf7-response-output,
+.mws-cf7 form.unaccepted .wpcf7-response-output { border-color: #C8102E; background-color: #FEF3F4; color: #7A0A1B; }
+
+.mws-cf7 form.sent .wpcf7-response-output { border-color: #12854A; background-color: #F0FAF4; color: #0D6A3A; }
+
+.mws-cf7 .wpcf7-spinner { margin: .6rem auto 0; display: block; }
+
+/* ── 13. Reveal polish ────────────────────────────────────────────────
+   AOS's default fade-up travels 100px, which at this section rhythm reads as
+   the page assembling itself. Halving the distance and easing out longer
+   makes the same reveal feel deliberate rather than busy.
+   ------------------------------------------------------------------- */
+[data-aos="fade-up"] {
+  transform: translate3d(0, 40px, 0);
+}
+
+/* ── Motion & print ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+  [data-aos] { opacity: 1 !important; transform: none !important; }
+  [data-hero-swiper] .media { transform: none !important; }
+  .btn-premium:hover::before { animation: none !important; }
+  .mws-pulse { animation: none !important; box-shadow: none !important; }
+
+  /* The blanket .001ms duration above would strobe the marquee rather than
+     stop it, so the animation is cancelled outright. The strip then becomes a
+     plain scrollable row and the duplicate track is redundant. */
+  .marquee__track { animation: none !important; transform: none !important; }
+  .marquee__track[aria-hidden="true"] { display: none; }
+  .marquee { overflow-x: auto; }
+}
+
+@media print {
+  header, footer, [data-to-top], [data-nav-toggle] { display: none !important; }
+  .media { background: #f3f3f3 !important; }
+  .media::after { display: none !important; }
+  .bg-dark::before { display: none !important; }
+  body { color: #000; }
+}

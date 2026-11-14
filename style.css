@@ -1,0 +1,17 @@
+/*
+Theme Name: MWS
+Author: MWS
+Description: GNT Landscaping landing page theme. Tailwind CSS, Swiper and AOS are compiled locally with gulp — no CDN requests. Front page content is edited in inc/config.php.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 7.0
+Requires PHP: 8.0
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: mws
+Tags: landing-page, business, custom-colors, responsive-layout
+
+This file carries the theme header only. The compiled stylesheet the browser
+actually loads is dist/css/main.min.css, built from src/css/main.css — see
+gulpfile.js. Editing this file has no visual effect.
+*/

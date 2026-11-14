@@ -1,0 +1,16 @@
+# Dependencies — restore with `npm install`.
+node_modules/
+
+# NOTE: dist/ is deliberately NOT ignored.
+# Production pulls this repository and has no node toolchain, so the compiled
+# CSS and JS have to arrive with the code. Run `npm run build` before committing
+# any change to src/ — a stale dist/ ships a site whose markup and stylesheet
+# disagree, which is harder to spot than no stylesheet at all.
+
+# Lead submissions: customer names, email addresses and IP addresses.
+storage/*.log
+
+# Local backup of an earlier copy of template-parts/.
+Archive.zip
+
+.DS_Store
