@@ -10,7 +10,15 @@
 # gitignored, so it does not exist in the repo — and with --delete, rsync would
 # erase it from the server on every single deploy. Excluding the directory keeps
 # it and its .htaccess intact.
+#
+# --chmod is not optional. `rsync -a` preserves the source's permissions, and
+# the files in the cPanel clone are created under that account's umask, which
+# can leave them owner-only. PHP still reads them, because PHP runs as the
+# account — but Apache serves static files as another user and returns 403 for
+# every stylesheet, script, font and image. The site then renders as unstyled
+# HTML with no obvious error anywhere. Forcing 755 on directories and 644 on
+# files makes each deploy correct regardless of the umask it inherited.
 deployment:
   tasks:
     - export DEPLOYPATH=/home2/gntlandscaping/public_html/wp-content/themes/mws
-    - /bin/rsync -a --delete --exclude='.git' --exclude='.cpanel.yml' --exclude='storage/' --exclude='node_modules/' ./ "$DEPLOYPATH/"
+    - /bin/rsync -a --chmod=D755,F644 --delete --exclude='.git' --exclude='.cpanel.yml' --exclude='storage/' --exclude='node_modules/' ./ "$DEPLOYPATH/"
