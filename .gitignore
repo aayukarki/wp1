@@ -14,3 +14,7 @@ storage/*.log
 Archive.zip
 
 .DS_Store
+
+# Sourcemaps are a `npm run dev` artifact. `npm run build` is production and
+# emits none, so a committed .map only ever describes an older source state.
+dist/**/*.map
