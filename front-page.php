@@ -276,9 +276,6 @@ if ($journalPosts !== []) {
     <!-- ══ Services ═════════════════════════════════════════════════════ -->
     <section id="services"
         class="<?= $section ?> relative overflow-hidden rounded-5xl <?= mws_section_bg("dark") ?> text-white/70 py-12 sm:px-10 md:px-14 md:py-16">
-        <div
-            class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_100%_0%,rgba(200,16,46,.32),transparent_60%),radial-gradient(50%_70%_at_0%_100%,rgba(200,16,46,.18),transparent_60%)]">
-        </div>
         <div class="<?= $wrap ?>">
 
             <div class="relative">
@@ -312,12 +309,25 @@ if ($journalPosts !== []) {
                                         <?= mws_e($service['title']) ?>
                                     </h3>
                                     <?php /* line-clamp-2: summaries are editor-written and vary in
-                                            length, and the slides sit in a row that has to keep its
-                                            "Learn more" links on one line. */ ?>
+                                            length, and the slides sit in a row whose footers have to
+                                            line up. */ ?>
                                     <p class="mb-3.5 line-clamp-2 text-body text-white/65"><?= mws_e($service['text']) ?></p>
+                                    <?php /* The whole slide is the link and its heading already names
+                                            the destination, so a "Learn more" label under each one was
+                                            the same two words rendered down the entire carousel. The
+                                            arrow carries the affordance; the screen-reader name is the
+                                            service, which is the part that actually differs. */ ?>
                                     <span class="inline-flex items-center gap-2 text-btn font-semibold text-brand-200 group-hover:text-white">
-                                        Learn more
                                         <?= mws_icon('arrow', 'h-[18px] w-[18px] transition group-hover:translate-x-1') ?>
+                                        <span class="sr-only">
+                                            <?php
+                                            printf(
+                                                /* translators: %s: service name */
+                                                esc_html__('Read more about %s', 'mws'),
+                                                esc_html($service['title'])
+                                            );
+                                            ?>
+                                        </span>
                                     </span>
                                 </a>
                             </li>

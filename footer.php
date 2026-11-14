@@ -18,10 +18,6 @@ $h2 = $ctx['h2'];
 
 <!-- ══ Footer ═══════════════════════════════════════════════════════ -->
 <footer class="relative overflow-hidden bg-dark pb-7 pt-14 text-white/70 md:pt-20">
-    <div
-        class="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_60%_at_85%_0%,rgba(200,16,46,.3),transparent_62%)]">
-    </div>
-
     <div class="<?= $wrap ?> relative z-10">
 
         <div

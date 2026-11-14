@@ -304,7 +304,7 @@ function mws_stat_badge(string $value, string $label, string $align = 'left'): s
     return '<div class="absolute -bottom-6 ' . $side . ' rounded-tl-4xl rounded-br-4xl bg-brand-600 '
          . 'px-7 py-5 text-white shadow-lift">'
          . '<strong class="block text-h2 leading-none">' . mws_e($value) . '</strong>'
-         . '<span class="text-micro uppercase text-white/80">' . mws_e($label) . '</span>'
+         . '<span class="text-micro uppercase text-white/90">' . mws_e($label) . '</span>'
          . '</div>';
 }
 

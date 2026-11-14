@@ -34,8 +34,6 @@ $cols = $colClasses[min(4, max(2, count($items)))] ?? 'lg:grid-cols-4';
 ?>
 
 <section class="relative overflow-hidden <?= mws_section_bg('dark') ?> py-16 md:py-20">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_100%_0%,rgba(200,16,46,.30),transparent_60%)]"></div>
-
     <div class="<?= $wrap ?> relative z-10">
         <?php if ($heading !== '') : ?>
             <h2 <?= mws_aos() ?> class="mb-12 max-w-[24ch] text-h2 !text-white">

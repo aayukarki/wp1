@@ -34,10 +34,6 @@ $prompt = rawurlencode((string) ($askAi['prompt'] ?? ''));
 <div class="mt-14 border-t border-white/10 pt-14">
     <div <?= mws_aos() ?> class="mx-auto max-w-[680px] text-center">
 
-        <?php if (($askAi['eyebrow'] ?? '') !== '') : ?>
-            <?= mws_eyebrow((string) $askAi['eyebrow'], true) ?>
-        <?php endif; ?>
-
         <h3 class="text-h2 text-white"><?= mws_heading((string) $askAi['title']) ?></h3>
 
         <?php if (($askAi['lead'] ?? '') !== '') : ?>

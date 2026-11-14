@@ -21,7 +21,6 @@ $lead    = (string) ($args['lead'] ?? __('Free on-site estimate, fixed-price pro
 <section class="<?= $ctx["section"] ?> <?= mws_section_bg() ?>">
     <div class="<?= $wrap ?>">
         <div <?= mws_aos() ?> class="relative overflow-hidden rounded-5xl bg-dark px-6 py-16 text-center md:py-20">
-            <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_100%_0%,rgba(200,16,46,.32),transparent_60%)]"></div>
             <div class="pointer-events-none absolute inset-0 opacity-50 [background-image:radial-gradient(rgba(255,255,255,.12)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(70%_70%_at_50%_50%,#000,transparent)]"></div>
 
             <div class="relative flex flex-col items-center">
