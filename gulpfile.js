@@ -43,13 +43,11 @@ const paths = {
 
     vendorCss: [
         'node_modules/swiper/swiper-bundle.min.css',
-        'node_modules/aos/dist/aos.css',
     ],
     /* Order matters: Swiper first so `var Swiper` is defined before main.js
        runs, AOS second. Both expose browser globals. */
     vendorJs: [
         'node_modules/swiper/swiper-bundle.min.js',
-        'node_modules/aos/dist/aos.js',
     ],
     /* Icons are real .svg files masked by CSS (no inline SVG anywhere), so the
        compiled sheet in dist/css needs them one level up at dist/icons. */

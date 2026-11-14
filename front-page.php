@@ -153,7 +153,7 @@ if ($journalPosts !== []) {
                 <div
                     class="<?= $wrap ?> relative z-20 flex w-full min-w-0 flex-col gap-8 py-8 md:py-12 lg:flex-row lg:items-end justify-end lg:justify-between lg:gap-12">
 
-                    <div class="min-w-0 max-w-[900px] text-white">
+                    <div data-hero-enter class="min-w-0 max-w-[900px] text-white">
                         <h1 class="text-h1 text-white drop-shadow-[0_2px_30px_rgba(0,0,0,.28)]">
                             <?= mws_heading($config['hero']['title']) ?>
                         </h1>

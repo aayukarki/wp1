@@ -3,7 +3,7 @@
  *
  * Progressive enhancement only: everything still works with JS disabled.
  *
- * Swiper and AOS are provided as globals by dist/js/vendor.min.js, which is
+ * Swiper is provided as a global by dist/js/vendor.min.js, which is
  * enqueued ahead of this file (see functions.php). Both are bundled from
  * node_modules by gulp — nothing is loaded from a CDN.
  */
@@ -89,33 +89,6 @@
     window.requestAnimationFrame(function () { onScroll(); ticking = false; });
   }, { passive: true });
   onScroll();
-
-  /* ── Scroll reveals (AOS) ──────────────────────────────────────────────
-     aos.css sets [data-aos^=fade] to opacity:0, so anything revealed would
-     stay invisible if this never ran — a failed bundle, or reduced motion,
-     where skipping the animation is the point. The .aos-ready class is the
-     signal to main.css that AOS really is taking over; without it the guard
-     there leaves every revealed block plainly visible. */
-  if (reduceMotion || typeof AOS === 'undefined') {
-    // AOS is not going to run, so hand the page back to the visible-by-default
-    // guard in main.css. The inline head script set this optimistically to
-    // avoid a fade-out flash; this is the correction when it was wrong.
-    document.documentElement.classList.remove('aos-ready');
-  } else {
-    AOS.init({
-      duration: 700,          // must be a multiple of 50 — see mws_aos() in helpers.php
-      easing: 'ease-out-cubic',
-      offset: 80,             // start a little before the block reaches the fold
-      once: true              // reveal once; no re-hiding on the way back up
-    });
-
-    // Headings load in a display face and the sections carry photos, both of
-    // which shift offsets after first paint — recompute once they have settled.
-    window.addEventListener('load', function () { AOS.refresh(); });
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () { AOS.refresh(); });
-    }
-  }
 
   /* ── Estimate modal ────────────────────────────────────────────────────
      The site's conversion path. Opened by every banner's button, and by any

@@ -354,28 +354,30 @@ function mws_icon_names(): array
 }
 
 /**
- * AOS scroll-reveal attributes.
+ * Scroll-reveal attributes — now deliberately empty.
  *
- * One convention across the page, so reveals read as a system rather than a
- * pile of one-offs: everything fades up.
+ * This used to return `data-aos="fade-up"` with a staggered delay, and the home
+ * page carried twenty-one of them: the same entrance on every section, card and
+ * row. One identical reveal repeated down a page is not a motion design, it is
+ * the absence of one — and it costs the reader, who meets each block as a
+ * delay rather than as content that is simply there.
  *
- * Deliberately vertical only. AOS's horizontal effects start the element
- * translated 100px sideways, and on a block that already spans its grid column
- * that pre-animation offset sticks out past the viewport and gives the whole
- * document a horizontal scrollbar until the reveal fires. Vertical offsets have
- * no such side effect.
+ * The page now moves in one authored place instead: the hero settles once on
+ * load (see `[data-hero-enter]` in src/css/main.css), and the hover layer
+ * answers every link. Nothing animates on scroll.
  *
- * Repeated items pass their loop index and stagger, so a row resolves in order
- * instead of all at once; the delay is capped so the last item never waits.
+ * The function stays, returning nothing, because it is called from well over a
+ * hundred places across every template. Keeping the call sites intact means the
+ * decision lives in exactly one spot and can be reversed in exactly one spot.
  *
- * Delays and durations MUST be multiples of 50 — aos.css ships pre-generated
- * rules at that interval, and any other value silently matches nothing.
+ * @param string $effect Ignored.
+ * @param int    $index  Ignored.
+ * @param int    $step   Ignored.
+ * @param int    $cap    Ignored.
  */
 function mws_aos(string $effect = 'fade-up', int $index = 0, int $step = 100, int $cap = 400): string
 {
-    $delay = min($index * $step, $cap);
-
-    return 'data-aos="' . mws_e($effect) . '"' . ($delay > 0 ? ' data-aos-delay="' . $delay . '"' : '');
+    return '';
 }
 
 /** "07:30" → minutes since midnight. */

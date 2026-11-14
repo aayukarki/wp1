@@ -94,17 +94,6 @@ h1, h2, h3, h4 {
 .marquee:hover .marquee__track,
 .marquee:focus-within .marquee__track { animation-play-state: paused; }
 
-/* ── Scroll reveals (AOS) ─────────────────────────────────────────────
-   aos.css sets [data-aos^=fade] to opacity:0 the moment it loads, so if
-   aos.js never runs — or reduced motion, where we skip it on purpose — that
-   content would be invisible for good. main.js marks <html> only when AOS is
-   genuinely initialising, so anything else lands here and stays visible.
-   ------------------------------------------------------------------- */
-html:not(.aos-ready) [data-aos] {
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
-}
 
 /* ── The [hidden] attribute vs Tailwind utilities ─────────────────────
    `.flex` and `[hidden]` have identical specificity, and Tailwind emits its
@@ -370,37 +359,16 @@ body {
 }
 
 /* ── 5. Buttons ───────────────────────────────────────────────────────
-   The primary button keeps its shape and colour; what it gains is a soft
-   specular sheen that sweeps once on hover, and a shadow that grows with the
-   lift rather than staying fixed while the button moves.
+   The primary button keeps its shape and colour; what it gains on hover is a
+   shadow that grows with the lift, so the two read as one movement rather than
+   a button sliding under a fixed shadow.
    ------------------------------------------------------------------- */
-.btn-premium {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.btn-premium::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 45%;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .28), transparent);
-  transform: translateX(-120%) skewX(-18deg);
-}
-
-.btn-premium:hover::before {
-  animation: sheen-sweep .9s cubic-bezier(.22, .61, .36, 1);
-}
-
-@keyframes sheen-sweep {
-  0%   { transform: translateX(-120%) skewX(-18deg); }
-  100% { transform: translateX(320%)  skewX(-18deg); }
-}
+/* `.btn-premium` is kept as a hook so every mws_btn() call site stays valid,
+   but the specular sheen that swept across it on hover is gone. A shine
+   travelling over a button is decoration that announces itself and says
+   nothing about the control; the lift and the deepening shadow below already
+   answer the pointer. Dropping it also frees the button from `overflow:
+   hidden`, which used to cage anything a descendant tried to draw outside. */
 
 /* Deepen the glow as the button lifts, so the two read as one movement. */
 .shadow-glow { transition: box-shadow .3s cubic-bezier(.22, .61, .36, 1); }
@@ -521,16 +489,46 @@ footer.bg-dark::before {
   .mws-reviews { zoom: 1; }
 }
 
+/* ── 10b. Hero entrance ───────────────────────────────────────────────
+   The page's one authored motion. Twenty-one scroll reveals used to stand in
+   for this: the same fade on every section, which reads as lag rather than as
+   design. Now the hero settles once on load and nothing else on the page moves
+   until the pointer asks it to.
+
+   `backwards` fill matters: each child holds its start frame through its own
+   delay, so nothing flashes at full opacity before its turn. The curve is a
+   settle, not a bounce — it never passes its mark.
+
+   It runs off `[data-hero-enter]` rather than a scroll library, so it is one
+   declaration with no observer, no bundle and nothing to re-trigger.
+   ------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-enter] > * {
+    animation: hero-enter .62s cubic-bezier(.22, 1, .36, 1) backwards;
+  }
+
+  [data-hero-enter] > :nth-child(1) { animation-delay: .06s; }
+  [data-hero-enter] > :nth-child(2) { animation-delay: .16s; }
+  [data-hero-enter] > :nth-child(3) { animation-delay: .26s; }
+  [data-hero-enter] > :nth-child(4) { animation-delay: .34s; }
+}
+
+@keyframes hero-enter {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
 /* ── 11. Pulse ────────────────────────────────────────────────────────
    For the financing button.
 
-   This was a scaled ::after ring, which never worked: `.btn-premium` sets
-   `overflow: hidden` so the sheen sweep stays inside the button, and that same
-   rule caged the ring — it expanded *within* the button instead of around it.
+   This was a scaled ::after ring, which never worked while `.btn-premium` set
+   `overflow: hidden` to keep its sheen inside the button: that rule caged the
+   ring, so it expanded *within* the button instead of around it.
 
    An element's own box-shadow is not clipped by its own overflow, only its
-   descendants are. So the ring is a box-shadow spread on the button itself and
-   escapes the clip without touching `.btn-premium`, which the sheen still needs.
+   descendants are, so the ring became a box-shadow spread on the button itself.
+   The sheen and its clip are both gone now, but the box-shadow approach is kept
+   — it is the simpler of the two and does not depend on the clip either way.
 
    Colour comes from a custom property so the effect is reusable; it defaults to
    the finance green rather than `currentColor`, which on this button is white
@@ -648,9 +646,6 @@ footer.bg-dark::before {
    the page assembling itself. Halving the distance and easing out longer
    makes the same reveal feel deliberate rather than busy.
    ------------------------------------------------------------------- */
-[data-aos="fade-up"] {
-  transform: translate3d(0, 40px, 0);
-}
 
 /* ── Motion & print ──────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -659,7 +654,6 @@ footer.bg-dark::before {
     animation-duration: .001ms !important;
     transition-duration: .001ms !important;
   }
-  [data-aos] { opacity: 1 !important; transform: none !important; }
   [data-hero-swiper] .media { transform: none !important; }
   .btn-premium:hover::before { animation: none !important; }
   .mws-pulse { animation: none !important; box-shadow: none !important; }

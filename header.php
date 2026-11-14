@@ -51,18 +51,6 @@ $financeUrl = mws_setting('financing_url')
     <link rel="icon" type="image/png" sizes="512x512" href="<?= mws_asset('assets/icons/favicon-512.png') ?>">
     <link rel="apple-touch-icon" sizes="180x180" href="<?= mws_asset('assets/icons/apple-touch-icon.png') ?>">
 
-    <script>
-        /* Claim the reveal guard before first paint. main.css keeps every
-           [data-aos] block visible until <html> carries .aos-ready, which stops
-           a failed bundle — or JS being off entirely — from leaving the page
-           blank. Setting it here rather than in the deferred main.js matters:
-           late, the guard lifts after paint and the below-fold blocks visibly
-           fade out before they fade back in. main.js takes the class off again
-           if AOS turns out not to have loaded. */
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            document.documentElement.classList.add('aos-ready');
-        }
-    </script>
 
     <?php wp_head(); ?>
 
