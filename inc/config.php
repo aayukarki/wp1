@@ -393,6 +393,36 @@ return [
         ],
     ],
 
+    /* "Ask an AI about us" — a footer block that hands the visitor a prompt
+       already written, rather than asking them to think one up.
+
+       Every provider here takes the question as a ?q= parameter, so the URL is
+       stored as a prefix and the template appends the encoded prompt.
+
+       Gemini is the exception and the reason this comment exists. Google
+       publishes no prefill parameter for gemini.google.com/app — it accepts
+       ?q= without error and then opens an empty chat, which looks like a broken
+       link to anyone who clicks it. The entry below therefore points at Google
+       AI Mode (udm=50), which is Gemini-powered and does carry the query. */
+    'ask_ai' => [
+        'eyebrow' => 'Checking us out?',
+        'title'   => 'Ask an AI about us',
+        'lead'    => "Don't take our word for it. Put the question to an assistant and see what it already knows about our work in Western Pennsylvania.",
+        'prompt'  => 'Summarize GNT Landscaping in Cranberry Township, Pennsylvania. What services do they offer, which areas do they cover, and what is their reputation?',
+        /* Logos go through the theme's mask system like every other icon, so
+           all five take their colour from currentColor and read as one set
+           rather than five companies' palettes competing in a footer row.
+           Grok's mark comes from Iconify's thesvg set; simple-icons, which
+           supplied the other four, carries no xAI icon. */
+        'items'   => [
+            ['label' => 'ChatGPT',    'icon' => 'chatgpt',    'url' => 'https://chatgpt.com/?q='],
+            ['label' => 'Claude',     'icon' => 'claude',     'url' => 'https://claude.ai/new?q='],
+            ['label' => 'Perplexity', 'icon' => 'perplexity', 'url' => 'https://www.perplexity.ai/search?q='],
+            ['label' => 'Gemini',     'icon' => 'gemini',     'url' => 'https://www.google.com/search?udm=50&q='],
+            ['label' => 'Grok',       'icon' => 'grok',       'url' => 'https://grok.com/?q='],
+        ],
+    ],
+
     'footer' => [
         'cta' => [
             'title'   => "Get in touch and\nreceive a free quote!",

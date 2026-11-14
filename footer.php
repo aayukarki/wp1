@@ -112,6 +112,10 @@ gets the extra span for its long labels. */ ?>
 
         </div>
 
+        <?php /* Ask an AI about us — under the menu columns, above the
+                 copyright row. */ ?>
+        <?php get_template_part('template-parts/ask-ai'); ?>
+
         <?php /* The wordmark is decorative and belongs behind everything. It
 used to come after the copyright row in the same stacking
 context, so it painted straight over that text. z-0 here plus

@@ -47,3 +47,8 @@
 .mws-icon--sun { --mws-icon: url("../icons/sun.svg"); }
 .mws-icon--truck { --mws-icon: url("../icons/truck.svg"); }
 .mws-icon--youtube { --mws-icon: url("../icons/youtube.svg"); }
+.mws-icon--chatgpt { --mws-icon: url("../icons/chatgpt.svg"); }
+.mws-icon--claude { --mws-icon: url("../icons/claude.svg"); }
+.mws-icon--gemini { --mws-icon: url("../icons/gemini.svg"); }
+.mws-icon--grok { --mws-icon: url("../icons/grok.svg"); }
+.mws-icon--perplexity { --mws-icon: url("../icons/perplexity.svg"); }
