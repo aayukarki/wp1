@@ -1,0 +1,16 @@
+---
+# cPanel Git Version Control deployment.
+#
+# cPanel clones this repo to ~/repositories/wp1 and runs these tasks when you
+# click "Deploy HEAD Commit". The clone is a staging copy — this file is what
+# copies it into the live theme directory.
+#
+# storage/ is excluded deliberately. It holds leads.log, the contact-form
+# submissions (customer names, email addresses, IP addresses). That file is
+# gitignored, so it does not exist in the repo — and with --delete, rsync would
+# erase it from the server on every single deploy. Excluding the directory keeps
+# it and its .htaccess intact.
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home2/gntlandscaping/public_html/wp-content/themes/mws
+    - /bin/rsync -a --delete --exclude='.git' --exclude='.cpanel.yml' --exclude='storage/' --exclude='node_modules/' ./ "$DEPLOYPATH/"
